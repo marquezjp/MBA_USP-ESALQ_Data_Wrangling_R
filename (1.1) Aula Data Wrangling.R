@@ -31,9 +31,9 @@ library("tidyverse")
 # Como estão em Excel, vamos importá-los da seguinte forma:
 
 library(readxl)
-
-dataset_inicial <- read_excel("(1.2) Dataset Aula Data Wrangling.xls")
-dataset_merge <- read_excel("(1.3) Dataset Aula Data Wrangling (Join).xls")
+caminho <- file.path('.')
+dataset_inicial <- read_excel(file.path(caminho, "data", "(1.2) Dataset Aula Data Wrangling.xls"))
+dataset_merge <- read_excel(file.path(caminho, "data", "(1.3) Dataset Aula Data Wrangling (Join).xls"))
 
 #--------------------Visualização-----------------------------------------------
 
