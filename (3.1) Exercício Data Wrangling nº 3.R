@@ -16,8 +16,8 @@
 library(tidyverse)
 
 # Importando a base de dados
-
-base_cvm <- read.csv("(3.2) CVM Resultado.csv",
+caminho <- file.path('.')
+base_cvm <- read.csv(file.path(caminho, "data", "(3.2) CVM Resultado.csv"),
                      sep = ";", 
                      encoding = "latin1")
 
@@ -66,7 +66,7 @@ contagem_nova <- base_cvm_aj %>%
 
 # Vamos adicionar os setores das empresas para fazer análises mais específicas
 
-cadastrais <- read.csv("(3.3) CVM Dados Cadastrais.csv",
+cadastrais <- read.csv(file.path(caminho, "data", "(3.3) CVM Dados Cadastrais.csv"),
                        sep = ";", 
                        encoding = "latin1")
 

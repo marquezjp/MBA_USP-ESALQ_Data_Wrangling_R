@@ -13,8 +13,8 @@ library(readxl)
 library(tidyverse)
 
 # Importando o banco de dados
-dataset_wdi <- read_excel("(2.2) WDI World Bank.xlsx")
-
+caminho <- file.path('.')
+dataset_wdi <- read_excel(file.path(caminho, "data", "(2.2) WDI World Bank.xlsx"))
 # Informações básicas do banco de dados
 dim(dataset_wdi)
 glimpse(dataset_wdi)
@@ -111,7 +111,7 @@ dataset_wdi_saude_final <- dataset_wdi_saude_final %>%
 
 # Por fim, vamos adicionar a categoria "income group" ao dataset
 
-income <- read_excel("(2.3) WDI Income Group.xlsx")
+income <- read_excel(file.path(caminho, "data", "(2.3) WDI Income Group.xlsx"))
 
 income <- income %>% 
   select(Code, `Income Group`) %>% 
