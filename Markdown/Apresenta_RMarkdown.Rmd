@@ -4,9 +4,9 @@ author: "Wilson Tarantin Junior"
 date: "23/05/2023"
 output:
   pdf_document: default
-  word_document: default
   html_document:
     df_print: paged
+  word_document: default
 ---
 
 ## R Markdown
@@ -15,30 +15,29 @@ O R Markdown é um ambiente onde é possível escrever os scripts em R e, caso n
 
 Em um projeto, poderíamos escrever diversas linhas explicativas ou nossos comentários sobre determinada etapa da análise.
 
-Logo que aberto um novo documento, o R Markdown é um grande campo em branco onde podemos escrever os textos. Um novo arquivo vem com algumas informações padrões, mas podem ser apagadas sem problemas (mantendo o cabeçalho, como acima). 
+Logo que aberto um novo documento, o R Markdown é um grande campo em branco onde podemos escrever os textos. Um novo arquivo vem com algumas informações padrões, mas podem ser apagadas sem problemas (mantendo o cabeçalho, como acima).
 
 Então, primeiramente, o R Markdown funciona como um editor de textos. Note que não é necessário começar o texto com o #, como em um R Script comum.
 
 Também é possível formatar os textos, mas as formatações aparecem no documento quando for publicado:
 
-1. *Texto em itálico*: com um * no início e no fim.
+1.  *Texto em itálico*: com um \* no início e no fim.
 
-2. **Texto em negrito**: com dois ** no início e no fim.
+2.  **Texto em negrito**: com dois \*\* no início e no fim.
 
-3. A seguir, com um * no início do texto, são gerados tópicos (bullets)
+3.  A seguir, com um \* no início do texto, são gerados tópicos (bullets)
 
-* Tópico 1
-* Tópico 2
-  * Subtópico 2.1 (aqui tem um tab no início)
+-   Tópico 1
+-   Tópico 2
+    -   Subtópico 2.1 (aqui tem um tab no início)
 
-4. Texto Subscrito: Texto~abcd123~
+4.  Texto Subscrito: Texto~abcd123~
 
-5. Texto Sobrescrito: Texto^efgh456^
+5.  Texto Sobrescrito: Texto^efgh456^
 
-6. Equações podem ser escritas na sintaxe LaTeX. A seguir, algumas informações básicas:
+6.  Equações podem ser escritas na sintaxe LaTeX. A seguir, algumas informações básicas:
 
-Para escrever uma equação na linha, coloque-a entre cifrão: $a=b^2$
-No output, existiria a equação $a=b^2$ e depois o texto continuaria.
+Para escrever uma equação na linha, coloque-a entre cifrão: $a=b^2$ No output, existiria a equação $a=b^2$ e depois o texto continuaria.
 
 Para escrever uma equação que fica fora do texto, mas em outra linha, utilize dois cifrões:
 
@@ -64,7 +63,7 @@ Vamos abrir um dataset e ver como os outputs ficam no documento final:
 
 ```{r Abrir Dataset, echo=TRUE}
 library(readxl)
-dados <- read_excel("(1.2) Dataset Aula Data Wrangling.xls")
+dados <- read_excel(file.path("..", "data", "(1.2) Dataset Aula Data Wrangling.xls"))
 ```
 
 Primeiro, vamos carregar a biblioteca:
