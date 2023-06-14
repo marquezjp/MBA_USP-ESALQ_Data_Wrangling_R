@@ -11,8 +11,8 @@
 library(tidyverse)
 
 # Importando o banco de dados
-jogos <- read.csv("(4.2) Jogos Copa 22.csv")
-
+caminho <- file.path('.')
+jogos <- read.csv(file.path(caminho, "data", "(4.2) Jogos Copa 22.csv"))
 glimpse(jogos)
 
 # De forma geral, o dataset já está bastante organizado

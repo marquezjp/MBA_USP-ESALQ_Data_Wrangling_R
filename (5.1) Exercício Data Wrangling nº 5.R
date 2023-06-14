@@ -13,9 +13,9 @@
 library(tidyverse)
 
 # Importando os bancos de dados
-
-filmes <- read.csv("(5.2) Filmes Streaming.csv")
-series <- read.csv("(5.3) Séries Streaming.csv")
+caminho <- file.path('.')
+filmes <- read.csv(file.path(caminho, "data", "(5.2) Filmes Streaming.csv"))
+series <- read.csv(file.path(caminho, "data", "(5.3) Séries Streaming.csv"))
 
 glimpse(filmes)
 glimpse(series)
