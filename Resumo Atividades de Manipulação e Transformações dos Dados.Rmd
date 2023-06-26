@@ -93,6 +93,7 @@ objeto %>% rename(nome_variavel = 1,
 
 ``` r
 as.numeric(objeto$nome_variavel)
+as.double(objeto$nome_variavel)
 ```
 
 ### Transformações de Número em Categoria (Usando replace ou recode)
@@ -156,7 +157,7 @@ objeto %>% mutate(nome_variavel = cut(nome_variavel,
                                       labels = c("categoria 01", "categoria 02")))
 ```
 
-## Cria, Modifica e Exclui Variaveis/Colunas (Usando mutate, transmute, select e relocate)
+## Cria, Modifica e Exclui Variaveis/Colunas (Usando mutate, transmute, select, relocate e purrr::discard)
 
 ``` r
 objeto <- objeto[1 , 3]                      # seleciona uma especifica variavel em uma especifica observação
@@ -171,6 +172,12 @@ objeto_vetor <- c(1,2,3,4,5,6,7,8,9,10)
 objeto %>% mutate(objeto_vetor)
 objeto %>% mutate(nome_variavel = nome_variavel * 2)
 objeto %>% mutate(nome_variavel = NULL)
+```
+
+``` r
+objeto %>% mutate(nome_variavel_nova = substr(nome_variavel, 1, 4)
+objeto %>% mutate(nome_variavel_nova = if_else(nome_variavel == "2021", VL_CONTA*1.0579, VL_CONTA*1))
+objeto %>% mutate(nome_variavel = ((nome_variavel - lag(nome_variavel, n = 1L))/lag(nome_variavel, n = 1L)))
 ```
 
 ``` r
@@ -190,6 +197,10 @@ objeto %>% select(nome_variavel02, nome_variavel05, everything()) # Reposicionar
 ``` r
 objeto %>% relocate(nome_variavel05, .after = nome_variavel02)
 objeto %>% relocate(nome_variavel05, .before = nome_variavel02)
+```
+
+``` r
+objeto %>% purrr::discard(~ all(is.na(.)))
 ```
 
 ## Seleciona Observações/linhas (Usando filter e slice)
@@ -215,6 +226,7 @@ objeto %>% filter(nome_variavel > mean(nome_variavel))
 ``` r
 objeto_vetor <- c("Gabriela", "Gustavo", "Letícia", "Antônio", "Ana")
 objeto %>% filter(nome_variavel %in% objeto_vetor)
+objeto %>% filter(str_detect(nome_variavel, "^texto_regex"))
 ```
 
 ``` r
@@ -224,6 +236,28 @@ objeto %>% slice_head(n=3) # as três primeiras linhas
 objeto %>% slice_tail(n=3) # as três últimas linhas
 objeto %>% slice_min(order_by = distancia, prop = 0.40) # os prop % menores
 objeto %>% slice_max(order_by = distancia, prop = 0.10) # os prop % maiores
+```
+
+``` r
+objeto_vetor <- is.infinite(objeto$nome_variavel)
+objeto %>% 
+  mutate(INF = objeto_vetor) %>% 
+  filter(INF == FALSE)
+```
+
+## Inverter as Observações/Linhas pela Variaveis/Colunas (Usando pivot_wider)
+
+
+``` r
+objeto %>% pivot_wider(id_cols = c("nome_variavel01", "nome_variavel02"),
+                       names_from = "nome_variavel05",
+                       values_from = "nome_variavel07")
+```
+
+``` r
+objeto %>% pivot_wider(id_cols = c("nome_variavel01", "nome_variavel02"),
+                       names_from = c("nome_variavel03", "nome_variavel05"),
+                       values_from = "nome_variavel07")
 ```
 
 ## Totalizar Datasets (Usando summarise, group_by, arrange e table)
@@ -272,6 +306,11 @@ objeto %>%
   arrange(média)
 ```
 
+``` r
+unique(objeto$nome_variavel)
+distinct(objeto)
+```
+
 ## Junção (merge) Datasets (Usando join e bind)
 
 ``` r
@@ -304,6 +343,105 @@ bind_rows(objeto_inicial, objeto_merge)
 objeto_inicial %>% bind_rows(objeto_merge)
 ```
 
+## Funções
+
+``` r
+atualizar <- function(x) {
+  atual <- ((x + 17)/2)
+  return(atual)
+}
+
+atualizar(1)
+atualizar(2)
+atualizar(3)
+atualizar(4)
+
+atualizar_hoje <- c(1:15)
+atualizar(atualizar_hoje)
+```
+
+``` r
+ajustar <- function(valor1, valor2) {
+  ajuste <- ((valor1 + 180)/(valor2 - 60))
+  return(ajuste)
+}
+
+ajustar(100, 80)
+ajustar(200, 80)
+ajustar(200, 100)
+```
+
+``` r
+médias <- function(x) {
+  media <- mean(x, na.rm = T)
+  return(media)
+}
+
+valores <- c(1, 4, 6, 9, 12, 16)
+
+médias(valores)
+```
+
+``` r
+coef_var <- function(x) {
+  cv <- ((sd(x, na.rm=T))/(mean(x, na.rm=T)))*100
+  return(cv)
+}
+
+```
+
 ## Iterações com Purrr
 
-## Funções
+``` r
+objeto_vetor <- c("nome_variavel01", "nome_variavel02", "nome_variavel03")
+map_dbl(objeto[objeto_vetor], mean, na.rm = T)
+map(objeto[objeto_vetor], quantile, probs = c(0.25, 0.50, 0.75), na.rm = T)
+```
+
+``` r
+objeto_vetor <- c("nome_variavel01", "nome_variavel02", "nome_variavel03")
+map(objeto[objeto_vetor], ~ summary(.))
+```
+
+``` r
+coef_var <- function(x) {
+  cv <- ((sd(x, na.rm=T))/(mean(x, na.rm=T)))*100
+  return(cv)
+}
+
+map_dbl(nova_base[vetor_input], coef_var)
+
+map_dbl(nova_base[vetor_input], ~ (sd(., na.rm=T) / mean(., na.rm=T))*100)
+```
+
+``` r
+map(nova_base, 5)
+map_chr(nova_base, typeof)
+map(nova_base, unique)
+```
+
+``` r
+médias_var <- list(5, 10, 15)
+desv_pad_var <- list(1, 2, 3)
+
+map2(médias_var, desv_pad_var, rnorm, n = 5)
+```
+
+``` r
+médias_var <- list(5, 10, 15)
+desv_pad_var <- list(1, 2, 3)
+tamanho_var <- list(7, 9, 11)
+
+parametros <- list(tamanho_var, médias_var, desv_pad_var)
+
+pmap(parametros, rnorm)
+```
+
+``` r
+médias_var <- list(5, 10, 15)
+desv_pad_var <- list(1, 2, 3)
+tamanho_var <- list(7, 9, 11)
+parametros <- list(mean = médias_var, sd = desv_pad_var, n = tamanho_var)
+
+pmap(parametros, rnorm)
+```
