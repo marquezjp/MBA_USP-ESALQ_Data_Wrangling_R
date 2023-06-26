@@ -1,0 +1,309 @@
+---
+title: "Resumo das Atividades de Manipulação e Transformações dos Dados (Data Wrangling)"
+author: "JotaPe"
+date: "2023-06-20"
+output: pdf_document
+---
+
+# Resumo das Atividades de Manipulação e Transformações dos Dados (Data Wrangling)
+
+Data Wrangling é o processo de transformar e mapear dados de um formato de dados "bruto" para outro formato com a intenção de torná-lo mais apropriado e valioso para uma determinada Análise dos Dados.
+
+## Importar datasets
+
+``` r
+load("arquivo.RData")
+```
+
+``` r
+objeto <- read.csv("arquivo.csv", sep = ",", dec = ".")
+objeto <- read.csv("arquivo.csv", sep = ";", dec = ".", encoding = "latin1")
+objeto <- read.csv("URL", sep = ",")
+```
+
+``` r
+library(readxl)
+objeto <- read_excel("arquivo.xlsx")
+```
+
+## Salvar os datasets
+
+``` r
+save(objeto, file = "arquivo.RData")
+```
+
+``` r
+write.csv(objeto, file = "arquivo.csv", row.names = F)
+```
+
+``` r
+library("writexl")
+write_xlsx(objeto,"arquivo.xlsx")
+```
+
+## Explorar Datasets
+
+``` r
+View(objeto)         # Mostra a base de dados completa em uma nova aba
+head(objeto, n = 10) # Mostra as 10 primeiras observações da base de dados
+names(objeto)        # Para ver os nomes das variáveis
+nrow(objeto)         # Para ver a quantidades de observações/linhas
+ncol(objeto)         # Para ver a quantidades de variáveis/colunas
+dim(objeto)          # As dimensões do dataset: linhas e colunas, respectivamente
+str(objeto)          # Mostra a estrutura da base de dados
+glimpse(objeto)      # Função parecida com a str
+```
+
+``` r
+objeto[1 , 3]
+objeto[ , -c(4,5)]
+objeto[ , c("nome_variavel", "nome_variavel", "nome_variavel")]
+objeto[objeto$nome_variavel > 50,]
+```
+
+## Renomear Variáveis do Datasets (Usando Rename)
+
+``` r
+objeto_vetor <- c("nome_variavel","nome_variavel","nome_variavel","nome_variavel")
+names(objeto) <- objeto_vetor
+```
+
+``` r
+objeto <- rename(objeto, 
+                 nome_variavel = "nome_variavel",
+                 nome_variavel = "nome_variavel",
+                 nome_variavel = "nome_variavel",
+                 nome_variavel = "nome_variavel",
+                 nome_variavel = "nome_variavel",
+                 nome_variavel = "nome_variavel")
+```
+
+``` r
+objeto %>% rename(nome_variavel = 1,
+                  nome_variavel = 2,
+                  nome_variavel = 3,
+                  nome_variavel = 4,
+                  nome_variavel = 5,
+                  nome_variavel = 6)
+```
+
+## Transformações de Variáveis do Datasets
+
+### Transformações de Texto em Número (Usando as.numeric)
+
+``` r
+as.numeric(objeto$nome_variavel)
+```
+
+### Transformações de Número em Categoria (Usando replace ou recode)
+
+``` r
+objeto %>% mutate(nome_variavel = replace(nome_variavel, nome_variavel==0, "Zero"),
+                  nome_variavel = replace(nome_variavel, nome_variavel==1, "Um"),
+                  nome_variavel = replace(nome_variavel, nome_variavel==2, "Dois"),
+                  nome_variavel = replace(nome_variavel, nome_variavel==3, "Três"))
+```
+
+``` r
+objeto %>% mutate(nome_variavel = recode(nome_variavel,
+                                         `0` = "Zero",
+                                         `1` = "Um", 
+                                         `2` = "Dois",
+                                         `3` = "Três"))
+```
+
+### Transformações de Categoria em Dummies (Variaveis Binárias) (Usando dummy_columns)
+
+``` r
+objeto %>% mutate(nome_variavel_cat1 = recode(nome_variavel,
+                                              "categoria 01"=1,
+                                              "categoria 02"=0,
+                                              "categoria 03"=0),
+                  nome_variavel_cat2 = recode(nome_variavel,
+                                              "categoria 01"=0,
+                                              "categoria 02"=1,
+                                              "categoria 03"=0),
+                  nome_variavel_cat3 = recode(nome_variavel,
+                                              "categoria 01"=0,
+                                              "categoria 02"=0,
+                                              "categoria 03"=1))
+```
+
+``` r
+install.packages("fastDummies")
+library("fastDummies")
+```
+
+``` r
+objeto <- dummy_columns(.data = objeto,
+                        select_columns = c("nome_variavel",
+                                           "nome_variavel"),
+                        remove_selected_columns = F,
+                        remove_first_dummy = F)
+```
+
+### Transformações de Faixas ou Condições em Categoria (Usando case_when ou cut)
+
+``` r
+objeto %>% mutate(nome_variavel = case_when(nome_variavel <= 20 ~ "categoria 01",
+                                            nome_variavel > 20 & nome_variavel <= 40 ~ "categoria 02",
+                                            nome_variavel > 40 ~ "categoria 03"))
+```
+
+``` r
+objeto %>% mutate(nome_variavel = cut(nome_variavel, 
+                                      breaks = c(0, median(nome_variavel), Inf),
+                                      labels = c("categoria 01", "categoria 02")))
+```
+
+## Cria, Modifica e Exclui Variaveis/Colunas (Usando mutate, transmute, select e relocate)
+
+``` r
+objeto <- objeto[1 , 3]                      # seleciona uma especifica variavel em uma especifica observação
+objeto <- objeto[, 1:3]                      # selecionando pela posição das colunas de 1 a 3
+objeto <- objeto[, c(1:3, 5)]                # pulando posições
+objeto <- objeto[ , -c(4,5)]                 # seleciona escluindo algumas variaveis pela posição das colunas
+objeto <- objeto[, c("nome_variavel02", "nome_variavel05")] # critérios após a vírgula
+```
+
+``` r
+objeto_vetor <- c(1,2,3,4,5,6,7,8,9,10)
+objeto %>% mutate(objeto_vetor)
+objeto %>% mutate(nome_variavel = nome_variavel * 2)
+objeto %>% mutate(nome_variavel = NULL)
+```
+
+``` r
+objeto_vetor <- c(1,2,3,4,5,6,7,8,9,10)
+objeto %>% transmute(nome_variavel, objeto_vetor, nome_variavel = nome_variavel * 2)
+```
+
+``` r
+objeto %>% select(nome_variavel02, nome_variavel05) # especificando
+objeto %>% select(-nome_variavel02, -nome_variavel05) # todas menos algumas
+objeto %>% select(nome_variavel02:nome_variavel05) # de uma a outra
+objeto %>% select(starts_with("nome")) # para algum início comum
+objeto %>% select(ends_with("variavel")) # para algum final comum
+objeto %>% select(nome_variavel02, nome_variavel05, everything()) # Reposicionar variáveis do dataset com "select"
+```
+
+``` r
+objeto %>% relocate(nome_variavel05, .after = nome_variavel02)
+objeto %>% relocate(nome_variavel05, .before = nome_variavel02)
+```
+
+## Seleciona Observações/linhas (Usando filter e slice)
+
+``` r
+objeto <- objeto[3:7, c("nome_variavel02", "nome_variavel05")]
+objeto <- objeto[3:7, 1:2]
+
+objeto <- objeto[objeto$nome_variavel > 20,] # critérios antes da vírgula
+objeto <- objeto[objeto$nome_variavel01 > 20 & objeto$nome_variavel02 < 25,]
+objeto <- objeto[objeto$nome_variavel01 <=15 | objeto$nome_variavel02 == "Tarde",]
+```
+
+``` r
+objeto %>% filter(nome_variavel > 20)
+objeto %>% filter(nome_variavel01 > 20 & nome_variavel02 < 25)
+objeto %>% filter(nome_variavel == "Manhã")
+objeto %>% filter(nome_variavel01 != "Manhã" & between(nome_variavel02, 20, 50))
+objeto %>% filter(nome_variavel01 <= 15 | nome_variavel02 == "Tarde")
+objeto %>% filter(nome_variavel > mean(nome_variavel))
+```
+
+``` r
+objeto_vetor <- c("Gabriela", "Gustavo", "Letícia", "Antônio", "Ana")
+objeto %>% filter(nome_variavel %in% objeto_vetor)
+```
+
+``` r
+objeto %>% slice(5:9) # com base na posição das linhas
+objeto %>% slice(1:2, 5:9) # com base na posição das linhas com intervalo
+objeto %>% slice_head(n=3) # as três primeiras linhas
+objeto %>% slice_tail(n=3) # as três últimas linhas
+objeto %>% slice_min(order_by = distancia, prop = 0.40) # os prop % menores
+objeto %>% slice_max(order_by = distancia, prop = 0.10) # os prop % maiores
+```
+
+## Totalizar Datasets (Usando summarise, group_by, arrange e table)
+
+``` r
+objeto %>% summarise(observações = n(),
+                     média = mean(tempo),
+                     mediana = median(tempo),
+                     desv_pad = sd(tempo),
+                     mínimo = min(tempo),
+                     máximo = max(tempo),
+                     quartil_3 = quantile(tempo, probs = 0.75))
+```
+
+``` r
+objeto %>% group_by(nome_variavel)
+objeto %>% group_by(nome_variavel02, nome_variavel05) 
+objeto %>% ungroup()
+
+objeto %>% arrange(nome_variavel)
+objeto %>% arrange(desc(nome_variavel))
+```
+
+``` r
+objeto <- as.data.frame(table(objeto$nome_variavel02,
+                              objeto$nome_variavel05))
+```
+
+``` r
+objeto %>% count(nome_variavel)
+objeto %>% count(nome_variavel02, nome_variavel05, name = "contagem")
+```
+
+``` r
+objeto %>% 
+  filter(nome_variavel01 > 20) %>% 
+  group_by(nome_variavel02) %>% 
+  summarise(observações = sum(!is.na(nome_variavel)),
+            média = mean(nome_variavel, na.rm = T),
+            mediana = median(nome_variavel, na.rm = T),
+            desv_pad = sd(nome_variavel, na.rm = T),
+            mínimo = min(nome_variavel, na.rm = T),
+            máximo = max(nome_variavel, na.rm = T),
+            quartil_1 = quantile(nome_variavel, probs = 0.25, na.rm = T),
+            quartil_3 = quantile(nome_variavel, probs = 0.75, na.rm = T)) %>% 
+  arrange(média)
+```
+
+## Junção (merge) Datasets (Usando join e bind)
+
+``` r
+left_join(objeto_inicial, objeto_merge, by = "nome_variavel")
+objeto_inicial %>% left_join(objeto_merge, by = "nome_variavel")
+```
+
+``` r
+right_join(objeto_inicial, objeto_merge, by = "nome_variavel")
+objeto_inicial %>% right_join(objeto_merge, by = "nome_variavel")
+```
+
+``` r
+inner_join(objeto_inicial, objeto_merge, by = "nome_variavel")
+full_join(objeto_inicial, objeto_merge, by = "nome_variavel")
+```
+
+``` r
+semi_join(objeto_inicial, objeto_merge, by = "nome_variavel")
+anti_join(objeto_inicial, objeto_merge, by = "nome_variavel")
+```
+
+``` r
+bind_cols(objeto_inicial, objeto_merge)
+objeto_inicial %>% bind_cols(objeto_merge)
+```
+
+``` r
+bind_rows(objeto_inicial, objeto_merge)
+objeto_inicial %>% bind_rows(objeto_merge)
+```
+
+## Iterações com Purrr
+
+## Funções
